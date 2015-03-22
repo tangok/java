@@ -1,0 +1,118 @@
+1、必要软件准备
+
+安装pcre
+为了支持rewrite功能，我们需要安装pcre
+
+# yum install pcre* //如过你已经装了，请跳过这一步
+安装openssl
+需要ssl的支持，如果不需要ssl支持，请跳过这一步
+
+# yum install openssl*
+2、安装nginx
+
+执行如下命令：
+
+# ./configure --prefix=/usr/local/nginx-1.5.1 \
+--with-http_ssl_module --with-http_spdy_module \
+--with-http_stub_status_module --with-pcre
+–with-http_stub_status_module：支持nginx状态查询
+–with-http_ssl_module：支持https
+–with-http_spdy_module：支持google的spdy,想了解请百度spdy,这个必须有ssl的支持
+–with-pcre：为了支持rewrite重写功能，必须制定pcre
+
+最后输出如下内容，表示configure OK了。
+…..
+
+checking for zlib library ... found
+ creating objs/Makefile
+Configuration summary
+ + using system PCRE library
+ + using system OpenSSL library
+ + md5: using OpenSSL library
+ + sha1: using OpenSSL library
+ + using system zlib library
+nginx path prefix: "/usr/local/nginx-1.5.1"
+ nginx binary file: "/usr/local/nginx-1.5.1/sbin/nginx"
+ nginx configuration prefix: "/usr/local/nginx-1.5.1/conf"
+ nginx configuration file: "/usr/local/nginx-1.5.1/conf/nginx.conf"
+ nginx pid file: "/usr/local/nginx-1.5.1/logs/nginx.pid"
+ nginx error log file: "/usr/local/nginx-1.5.1/logs/error.log"
+ nginx http access log file: "/usr/local/nginx-1.5.1/logs/access.log"
+ nginx http client request body temporary files: "client_body_temp"
+ nginx http proxy temporary files: "proxy_temp"
+ nginx http fastcgi temporary files: "fastcgi_temp"
+ nginx http uwsgi temporary files: "uwsgi_temp"
+ nginx http scgi temporary files: "scgi_temp"
+# make //确定你的服务器有安装make，如果没有安装请执行yum install make
+ 
+# make install
+3、启动、关闭、重置nginx
+
+启动：直接执行以下命令,nginx就启动了,不需要改任何配置文件,nginx配置多域名虚拟主机请参考后续文章.
+
+/usr/local/nginx-1.5.1/sbin/nginx
+试试访问：我这边不贴图，直接使用curl命令来读取web信息
+
+[root@ns conf]
+# curl -s http://localhost | grep nginx.com
+nginx.com.
+关闭：
+
+/usr/local/nginx-1.5.1/sbin/nginx -s stop
+重置：当你有修改配置文件的时候，只需要reload以下即可
+
+/usr/local/nginx-1.5.1/sbin/nginx -s reload
+整个nginx的安装就到这里结束了。
+
+检查nginx配置，重载配置以及重启的方法
+
+
+ 
+一直使用apache，新的vps使用的是nginx，于是开始折腾nginx了，今天查到了检查nginx配置是否正确和重启的方法，记录下，高手飘过。我的nginx安装在/usr/local/nginx，系统为ubuntu
+
+
+几个常用的nginx命令
+
+
+Nginx 安装后只有一个程序文件，本身并不提供各种管理程序，它是使用参数和系统信号机制对 Nginx 进程本身进行控制的。 Nginx 的参数包括有如下几个：
+
+
+可以这样使用
+
+
+/usr/local/nginx/sbin/nginx -参数
+
+
+-c ：使用指定的配置文件而不是 conf 目录下的 nginx.conf 。
+
+
+-t：测试配置文件是否正确，在运行时需要重新加载配置的时候，此命令非常重要，用来检测所修改的配置文件是否有语法错误。
+
+
+-s reload 重载
+
+
+-s stop 停止
+
+
+nginx启动/重启/停止
+
+
+这个很简单，就是运行命令：
+
+
+sudo /etc/init.d/nginx {start|restart|stop}
+
+
+
+
+nginx检查配置
+
+
+/usr/local/nginx/sbin/nginx -t nginx.conf
+
+
+nginx修改配置后重载
+
+
+/usr/local/nginx/sbin/nginx -s reload
